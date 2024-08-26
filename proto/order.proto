@@ -1,0 +1,65 @@
+syntax = "proto3";
+
+package order;
+option go_package = "/proto";
+
+service OrderService {
+    rpc CreateOrder (CreateOrderRequest) returns (CreateOrderResponse);
+    rpc OrderList (OrderListRequest) returns (OrderListResponse);
+    rpc OrderByID (OrderByIDRequest) returns (OrderByIDResponse);
+    rpc CreateOrderItem (CreateOrderItemRequest) returns (CreateOrderItemResponse);
+}
+
+message Order {
+    int32 id = 1;
+    int32 user_id = 2;
+    double total = 3;
+    string status = 4;
+}
+
+message OrderItem {
+    int32 id = 1;
+    int32 order_id = 2;
+    int32 product_id = 3;
+    double price = 4;
+}
+
+message CreateOrderRequest {
+    int32 user_id = 1;
+    double total = 2;
+    string status = 3;
+}
+
+message CreateOrderResponse {
+    Order order = 1;
+}
+
+
+message OrderListRequest {
+   
+}
+
+message OrderListResponse {
+    repeated Order orders = 1;
+    repeated OrderItem orderItem = 2;
+}
+
+message OrderByIDRequest {
+    int32 id = 1;
+}
+
+message OrderByIDResponse {
+    Order order = 1;
+    OrderItem orderItem = 2;
+}
+
+
+message CreateOrderItemRequest {
+    int32 order_id = 1;
+    int32 product_id = 2;
+    double price = 3;
+}
+
+message CreateOrderItemResponse {
+    OrderItem order_item = 1;
+}
