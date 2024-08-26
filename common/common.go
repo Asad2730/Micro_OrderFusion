@@ -5,7 +5,7 @@ import (
 	"encoding/base64"
 	"time"
 
-	pb "github.com/Asad2730/Micro_OrderFusion/proto"
+	pb "github.com/Asad2730/Micro_OrderFusion/proto/user"
 	"github.com/golang-jwt/jwt/v5"
 )
 

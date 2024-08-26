@@ -7,7 +7,7 @@ import (
 	"net"
 
 	"github.com/Asad2730/Micro_OrderFusion/common"
-	pb "github.com/Asad2730/Micro_OrderFusion/proto"
+	pb "github.com/Asad2730/Micro_OrderFusion/proto/user"
 	"github.com/Asad2730/Micro_OrderFusion/user/db"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -24,32 +24,28 @@ func NewServer(address string) *server {
 }
 
 func (s *server) Login(ctx context.Context, request *pb.RequestLogin) (*pb.LoginResponse, error) {
-	var logged_user *pb.User
 
 	for _, user := range db.User_db {
 		if user.Email == request.Email && user.Password == request.Password {
-			logged_user = user
-			break
+
+			token, err := common.GenerateJWT(user)
+			if err != nil {
+				return nil, status.Errorf(codes.Internal, "Failed to generate token: %v", err)
+			}
+
+			response := &pb.LoginResponse{
+				Id:    user.Id,
+				Name:  user.Name,
+				Email: user.Email,
+				Token: token,
+			}
+
+			return response, nil
 		}
 	}
 
-	if logged_user == nil {
-		return nil, status.Errorf(codes.NotFound, "User not found with Email : %s\n", request.Email)
-	}
+	return nil, status.Errorf(codes.NotFound, "User not found with Email : %s\n", request.Email)
 
-	token, err := common.GenerateJWT(logged_user)
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "Failed to generate token: %v", err)
-	}
-
-	response := &pb.LoginResponse{
-		Id:    logged_user.Id,
-		Name:  logged_user.Name,
-		Email: logged_user.Email,
-		Token: token,
-	}
-
-	return response, nil
 }
 
 func (s *server) SignUp(ctx context.Context, request *pb.RequestSignup) (*pb.SignupResponse, error) {

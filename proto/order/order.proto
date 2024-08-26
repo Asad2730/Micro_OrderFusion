@@ -39,9 +39,13 @@ message OrderListRequest {
    
 }
 
-message OrderListResponse {
-    repeated Order orders = 1;
+message OrderList{
+    Order order = 1;
     repeated OrderItem orderItem = 2;
+}
+
+message OrderListResponse {
+    repeated OrderList orderList = 1;
 }
 
 message OrderByIDRequest {
@@ -50,7 +54,7 @@ message OrderByIDRequest {
 
 message OrderByIDResponse {
     Order order = 1;
-    OrderItem orderItem = 2;
+    repeated OrderItem orderItems = 2;
 }
 
 

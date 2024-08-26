@@ -7,7 +7,7 @@ import (
 	"net"
 
 	"github.com/Asad2730/Micro_OrderFusion/product/db"
-	pb "github.com/Asad2730/Micro_OrderFusion/proto"
+	pb "github.com/Asad2730/Micro_OrderFusion/proto/product"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -44,20 +44,16 @@ func (s *server) ProductList(ctx context.Context, request *pb.ListProductRequest
 }
 
 func (s *server) ProductByID(ctx context.Context, request *pb.RequestProductID) (*pb.SingleProductResponse, error) {
-	var product *pb.Product
+
 	for _, item := range db.Product_db {
 		if item.Id == request.Id {
-			product = item
-			break
+			response := &pb.SingleProductResponse{Product: item}
+			return response, nil
 		}
 	}
 
-	if product == nil {
-		return nil, status.Errorf(codes.NotFound, "Product Not found id: %d\n", request.Id)
-	}
+	return nil, status.Errorf(codes.NotFound, "Product Not found against id: %d\n", request.Id)
 
-	response := &pb.SingleProductResponse{Product: product}
-	return response, nil
 }
 
 func (s *server) UpdateProduct(ctx context.Context, request *pb.RequestProductUpdate) (*pb.SingleProductResponse, error) {
