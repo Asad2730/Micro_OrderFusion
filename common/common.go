@@ -3,11 +3,15 @@ package common
 import (
 	"crypto/rand"
 	"encoding/base64"
+	"sync"
 	"time"
 
 	pb "github.com/Asad2730/Micro_OrderFusion/proto/user"
 	"github.com/golang-jwt/jwt/v5"
 )
+
+var jwtSecret string
+var mu sync.Mutex
 
 func generateSecretKey() (string, error) {
 	key := make([]byte, 32) // 32 bytes = 256 bits
@@ -18,12 +22,16 @@ func generateSecretKey() (string, error) {
 }
 
 func GenerateJWT(user *pb.User) (string, error) {
-	secret, err := generateSecretKey()
-	if err != nil {
-		panic(err)
-	}
+	mu.Lock()
+	defer mu.Unlock()
 
-	jwtSecret := []byte(secret)
+	if jwtSecret == "" {
+		var err error
+		jwtSecret, err = generateSecretKey()
+		if err != nil {
+			panic(err)
+		}
+	}
 
 	claims := jwt.MapClaims{
 		"id":    user.GetId(),
@@ -32,5 +40,11 @@ func GenerateJWT(user *pb.User) (string, error) {
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	return token.SignedString(jwtSecret)
+	return token.SignedString([]byte(jwtSecret))
+}
+
+func GetJWTSecret() string {
+	mu.Lock()
+	defer mu.Unlock()
+	return jwtSecret
 }

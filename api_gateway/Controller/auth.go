@@ -1,4 +1,4 @@
-package authcontroller
+package controller
 
 import (
 	user "github.com/Asad2730/Micro_OrderFusion/proto/user"
@@ -30,7 +30,7 @@ func (client *AuthClient) SignUp(c *gin.Context) {
 		return
 	}
 
-	c.JSON(201, res)
+	c.JSON(201, res.Message)
 }
 
 func (client *AuthClient) Login(c *gin.Context) {
